@@ -1,14 +1,18 @@
 # Splash Software Assessmemt
 
-This project authored by Kumbirai Benjamin Deve for Splash Software.
+This project was authored by Kumbirai Benjamin Deve for Splash Software.
 
 ## How to play the Game
 
-1. First please run ### `npm install`
-2. then `npm start`
-3. once the game has loaded pelase use the following key controls to move the car around:
-    i. a - Left control
-    ii. d - right control
-    iii. s - center control
+1. First please run `npm install`
+2. Then `npm start`
+3. Once the game has loaded please use the following keyboard controls to move the car around and avoid on coming traffic:
+
+
+    Keyboard Button | Control
+    ------------- | -------------
+    a | Left
+    s  | Center
+    d | Right
 
 4. Enjoy
