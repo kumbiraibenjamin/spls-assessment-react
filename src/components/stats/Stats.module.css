@@ -1,0 +1,73 @@
+.statsContainer {
+    margin-top: 20px;
+    max-width: 800px;
+}
+
+.recordHeadingText,
+.recordListLabel{
+    display: block;
+    font-size: 10px;
+}
+
+
+
+.recordListItem{
+    margin-left: 10px;
+}
+
+.recordHeading{
+    font-size: 2rem;
+    line-height: 1.3;
+    font-weight: 800;
+    letter-spacing: -0.05rem;
+    margin: 1rem 0;  
+}
+
+.recordSmall, 
+.playersHeading{
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.05rem; 
+}
+
+.position{
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.05rem; 
+}
+
+.user {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 5px;
+    object-fit: cover;
+  }
+
+  .rank {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border-color: white;
+    background-color: #131444;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .rankText {
+    color: white;
+    display: block;
+    font-size: 9px;
+}
+
+.rankLabel{
+    color: white;
+    display: block;
+    font-size: 1rem;
+    font-weight: 800;
+    margin-top: 10px;
+    letter-spacing: -0.05rem; 
+}
