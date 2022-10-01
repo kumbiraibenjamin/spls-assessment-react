@@ -2,9 +2,9 @@
     /* display: flex;
     align-items: center;
     justify-content: center; */
-    margin-top: 20px;
-    max-width: 1120px;
-    width: 100%;
+    margin: 20px auto ;
+    max-width: 1120px;;
+
 }
 
 .recordHeadingText,
@@ -56,14 +56,27 @@
     color: white;
   }
 
+  .chatCard, 
+  .playersCard {
+    background: rgba(16, 12, 74);
+    border-radius: 12px;
+    color: white;
+  }
+
   .rankBody ul li {
     background: rgba(16, 12, 74);
     color: white;
   }
 
-  .rankHeader {
+  .rankHeader, 
+  .settingsButton,
+  .sendButton {
     background-color: #9747FF;
     color: #fff;
+  }
+
+  .sendButton {
+    border-radius: 0 0 5px;
   }
 
   .rank {
@@ -92,3 +105,46 @@
     margin-top: 10px;
     letter-spacing: -0.05rem; 
 }
+
+ .chatInput {
+    background: rgba(16, 12, 74);
+    color: #fff;
+ }
+
+ .gameStartText {
+
+    font-family: 'Saira';
+    font-style: normal;
+    font-weight: 700;
+    line-height: 21px;
+
+    display: flex;
+    align-items: center;
+
+    /* GradientButton */
+
+    background: linear-gradient(180deg, #FEBE00 -7.69%, #FF6E01 81.99%, #FF0F00 127.88%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+
+
+ }
+
+ .chatJoin {
+    /* Text */
+
+    /* English/Body1/Regular */
+
+    font-family: 'Saira';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 21px;
+    /* identical to box height, or 139% */
+
+
+    color: #FF3EEC;
+
+
+ }

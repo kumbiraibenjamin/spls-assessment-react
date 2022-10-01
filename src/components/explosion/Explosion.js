@@ -35,7 +35,7 @@ const Explosion = ({ carProps, width, height, textures }) => {
                 isPlaying={true}
                 // initialFrame={0}
                 scale={0.5}
-                animationSpeed={0.1}
+                animationSpeed={0.02}
             />
         </Container>
 
