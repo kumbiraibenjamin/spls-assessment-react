@@ -1,7 +1,13 @@
-.container {
+body {
+  background: radial-gradient(101.35% 101.35% at 50% 22.11%, #4E2082 0%, #0C0C4C 71.87%), #131444;
+}
+
+.stage-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 20px;
+  border-radius: 20px;
 }
 
 .App-logo {

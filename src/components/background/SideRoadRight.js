@@ -1,24 +1,17 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { Sprite, useTick } from '@inlet/react-pixi';
+import { Sprite, } from '@inlet/react-pixi';
 
 import sideroad_right from '../../assets/sideroad_right.png';
 
 const SideRoadRight = ({ sideRRProps }) => {
 
-    let { x, y, scale } = sideRRProps;
+    let { x, y, scale, anchor } = sideRRProps;
 
     let [xPosition, setXPosition] = useState(x);
     let [yPosition, setYPosition] = useState(y);
     let [scaleSize, setScaleSize] = useState(scale);
 
-    useTick(() => {
-        if (scaleSize > 0) {
-            setXPosition(() => xPosition += 5);
-            setYPosition(() => yPosition += 2);
-            setScaleSize(() => scaleSize += 0.003);
-        }
-    });
 
     useEffect(() => {
         setYPosition(y);
@@ -33,6 +26,8 @@ const SideRoadRight = ({ sideRRProps }) => {
                 x={xPosition}
                 y={yPosition}
                 scale={scaleSize}
+                anchor={anchor}
+
             />
         </>
     )

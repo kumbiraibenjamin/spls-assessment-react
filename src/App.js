@@ -1,14 +1,18 @@
 
 import './App.css';
-import { Stage, Sprite, AnimatedSprite } from '@inlet/react-pixi'
+import { Stage, useApp } from '@inlet/react-pixi'
 
 import { useState, useEffect } from 'react'
+
+import * as PIXI from 'pixi.js';
 
 import Stats from './components/stats/Stats';
 
 import Background from './components/background/Background'
 import PlayerCar from './components/cars/PlayerCar'
 import EnemyCar from './components/cars/EnemyCar'
+import Explosion from './components/explosion/Explosion'
+import explosion_spritesheet from "./assets/explosion_spritesheet.avif";
 
 import io from 'socket.io-client';
 
@@ -21,241 +25,219 @@ import enemyCenter from './assets/cars/enemy_center.png'
 import enemyLeft from './assets/cars/enemy_left.png'
 import enemyRight from './assets/cars/enemy_right.png'
 
-import explosion_spritesheet from './assets/explosion_spritesheet.avif'
-
-let i = 0;
-
-const moveCar = (position, carProps, width) => {
-  const { x, y, carWidth, carHeight, image } = carProps;
-
-  if (position === 's') {
-    return {
-      x: width / 2 - (carWidth * 0.60), y, carWidth, carHeight, image: carCenter
-    }
-
-  } else if (position === 'a') {
-    return {
-      x: width / 2 - (carWidth * 1.5), y, carWidth, carHeight, image: carRight
-    }
-
-  } else if (position === 'd') {
-    return {
-      x: width / 2 + (carWidth * 0.50), y, carWidth, carHeight, image: carLeft
-    }
-
-
-  } else {
-    return { x, y, carWidth, carHeight, image }
-  }
-}
-
-const getEnemyData = (data) => {
-
-
-  if (data === 'left') {
-    return {
-      x: 360, y: 460, image: enemyLeft, scale: 0.05, position: 'left'
-    }
-
-  } else if (data === 'right') {
-    return {
-      x: 385, y: 460, image: enemyRight, scale: 0.05, position: 'right'
-    }
-
-  } else {
-    return {
-      x: 350, y: 460, image: enemyCenter, scale: 0.05, position: 'center'
-    }
-  }
-
-};
-
-
-
 
 const App = () => {
 
-  const width = 800, height = 600;
-  const stageProperties = {
-    width: width, height: height,
-  };
 
-  const carWidth = 100, carHeight = 81;
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
-  const [carProps, setCarProps] = useState({
-    x: width / 2 - (carWidth * 0.60), y: height * 0.85, carWidth, carHeight, image: carCenter
+  const [carProps, setCarProps] = useState({ x: 0, y: 0, scale: 0, image: carCenter });
+  const [enemyProps, setEnemyProps] = useState({
+    x: 0, y: 0, image: enemyCenter, scale: 0, position: ''
   });
+  const [playerPosition, setPlayerPosition] = useState({ x: 0, y: 0 });
 
-  const [playerPosition, setPlayerPosition] = useState({ x: 340, y: 510 });
   const [collision, setCollision] = useState(false);
+
+  const [textures, setTextures] = useState([]);
 
   const [statPlayers, setStatPlayers] = useState([]);
   const [statChat, setStatChat] = useState('');
   const [statChatJoin, setStatChatJoin] = useState([]);
 
-  const [enemyProps, setEnemyProps] = useState({
-    x: 350, y: 460, image: enemyCenter, scale: 0.05, position: 'center' // center
-  });
 
 
+  // Move car depending on key press
+  const moveCar = (position, w) => {
 
+    if (w > 0) {
+      if (position === 's') {
+        return {
+          x: w / 2 - (w * 0.01785), y: w * 0.667, scale: w * 0.18 / 478, image: carCenter, position: 'center'
+        }
+
+      } else if (position === 'a') {
+        return {
+          x: w / 2 - (w * 0.2), y: w * 0.667, scale: w * 0.18 / 473, image: carRight, position: 'left'
+        }
+
+      } else if (position === 'd') {
+        return {
+          x: w / 2 + (w * 0.15), y: w * 0.667, scale: w * 0.18 / 473, image: carLeft, position: 'right'
+        }
+
+      }
+    } else {
+
+    }
+  }
+  // set enemy position based on data from socket
+  const enemyPosition = (data, w, h) => {
+
+    if (data === 'left') {
+      return {
+        x: w / 2 - (w * 0.027), y: h * 0.6, image: enemyLeft, scale: w * 0.021 / 478, position: 'left'
+
+      }
+
+    } else if (data === 'right') {
+      return {
+        x: w / 2 - (w * 0.06), y: h * 0.6, image: enemyRight, scale: w * 0.021 / 478, position: 'right'
+
+      }
+
+    } else {
+      return {
+        x: w / 2 - (w * 0.0446), y: h * 0.6, image: enemyCenter, scale: w * 0.021 / 478, position: 'center'
+
+      }
+    }
+
+  };
+
+  // Set car postion  Event
+  const setCarPositionEvent = (e, w) => {
+    if (w > 0) {
+      const { x, y, scale, image, position } = moveCar(e.key, w);
+
+      setCarProps({ x, y, scale, image, position });
+
+      setPlayerPosition({ x, y, });
+    }
+  };
+
+  // Set stage widths
+  const getWindowDimensionsEvent = () => {
+
+    const { innerWidth: w } = window;
+
+    if (w < 1120) {
+      setWidth(w);
+      setHeight(w * 0.5794);
+
+    } else {
+      setWidth(1120);
+      setHeight(649);
+
+    }
+
+  };
+
+  // Set collion boolean with timer
   const handleCollision = () => {
     setCollision(true);
-    console.warn('collision', collision)
+    console.warn('collision');
 
     setTimeout(() => {
       setCollision(false);
-    }, 5000);
+    }, 2000);
   }
 
+  const generateFramesJSON = (animationWidth, animationHeight, rowSize, colSize, fileWidth, fileHeight, imageName) => {
+    let generated = {
+      "frames": {},
+      "meta": {
+        "app": "Splash Software Assessment",
+        "version": "1.0",
+        "image": imageName,
+        "format": "RGBA8888",
+        "size": { "w": fileWidth, "h": fileHeight },
+        "scale": "1",
+        "smartupdate": ""
+      }
+    };
+
+    for (let i = 0; i < rowSize; i++) {
+      for (let j = 0; j < colSize; j++) {
+        const px = animationWidth * i;
+        const py = animationHeight * j;
+
+        const image = `${imageName}${px}${py}.png`
+        generated.frames[image] = {
+          "frame": { "x": px, "y": py, "w": animationWidth, "h": animationHeight },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": { "x": px, "y": py, "w": animationWidth, "h": animationHeight },
+          "sourceSize": { "w": animationWidth, "h": animationHeight }
+        }
+      }
+    }
+
+    return generated;
+  };
+
+  // Get explosion textures from .avif file
+  const getExplosionTextures = async () => {
+    const explosionFramesJSON = generateFramesJSON(1120, 649, 6, 5, 6720, 3245, "explosion_spritesheet.avif")
+
+    const baseTexture = PIXI.BaseTexture.from(explosion_spritesheet);
+    const spritesheet = new PIXI.Spritesheet(baseTexture, explosionFramesJSON);
+    const textures = await spritesheet.parse();
+    setTextures(Object.keys(textures).map((t) => textures[t]));
+  }
+
+  // Stage size Effect
   useEffect(() => {
-    window.addEventListener('keypress', e => {
-      setCarProps(moveCar(e.key, carProps, width));
-      const { x, y } = moveCar(e.key, carProps, width);
-      setPlayerPosition({ x, y, });
-    }, [playerPosition, carProps]);
+    // Set default width and height
+    getWindowDimensionsEvent();
 
-    // Websocket faker
-    // setInterval(() => {
-    //   const data = '';
-    //   setEnemyProps(getEnemyData(data, enemyProps, width));
+    // Add resize event listener
+    window.addEventListener('resize', getWindowDimensionsEvent);
 
-    // const newChat = "Hello, How can I join?"
-    // setStatChat(newChat);
+    // remove listener on destroy
+    return () => window.removeEventListener('resize', getWindowDimensionsEvent);
+  }, []);
 
-    // const players = [
-    //   {
-    //     "name": "Prasad Mirella",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/1.jpg",
-    //     "record": 3,
-    //     "rank": 4,
-    //     "gamesPlayed": 27,
-    //     "worstRecord": 2,
-    //     "highestRank": 104
-    //   },
-    //   {
-    //     "name": "Chisomo Volker",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/2.jpg",
-    //     "record": 0,
-    //     "rank": 3,
-    //     "gamesPlayed": 36,
-    //     "worstRecord": 0,
-    //     "highestRank": 105
-    //   },
-    //   {
-    //     "name": "Aránzazu Jong-Su",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/3.jpg",
-    //     "record": 4,
-    //     "rank": 6,
-    //     "gamesPlayed": 30,
-    //     "worstRecord": 3,
-    //     "highestRank": 78
-    //   },
-    //   {
-    //     "name": "Zenobia Jósteinn",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/4.jpg",
-    //     "record": 0,
-    //     "rank": 1,
-    //     "gamesPlayed": 35,
-    //     "worstRecord": 0,
-    //     "highestRank": 108
-    //   },
-    //   {
-    //     "name": "Eulogia Neilina",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/5.jpg",
-    //     "record": 0,
-    //     "rank": 5,
-    //     "gamesPlayed": 33,
-    //     "worstRecord": 0,
-    //     "highestRank": 109
-    //   },
-    //   {
-    //     "name": "Berach Niraj",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/6.jpg",
-    //     "record": 0,
-    //     "rank": 7,
-    //     "gamesPlayed": 38,
-    //     "worstRecord": 0,
-    //     "highestRank": 98
-    //   },
-    //   {
-    //     "name": "Mirembe Anouska",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/7.jpg",
-    //     "record": 0,
-    //     "rank": 2,
-    //     "gamesPlayed": 33,
-    //     "worstRecord": 0,
-    //     "highestRank": 105
-    //   },
-    //   {
-    //     "name": "Anita Olwen",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/8.jpg",
-    //     "record": 0,
-    //     "rank": 8,
-    //     "gamesPlayed": 33,
-    //     "worstRecord": 0,
-    //     "highestRank": 104
-    //   },
-    //   {
-    //     "name": "Iroda Paula",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/9.jpg",
-    //     "record": 0,
-    //     "rank": 9,
-    //     "gamesPlayed": 28,
-    //     "worstRecord": 0,
-    //     "highestRank": 113
-    //   },
-    //   {
-    //     "name": "Thorben Melite",
-    //     "avatar": "https://cdn.spls.ae/cdn/avatar/10.jpg",
-    //     "record": 0,
-    //     "rank": 10,
-    //     "gamesPlayed": 37,
-    //     "worstRecord": 0,
-    //     "highestRank": 108
-    //   }
-    // ]
-    // setStatPlayers(players);
+  // Set initial car size and position
+  useEffect(() => {
+    if (width > 0) {
+      const { x, y, scale, image, position } = moveCar("s", width);
+      setCarProps({ x, y, scale, image, position });
+      getExplosionTextures();
+    }
+  }, [width]);
 
-    // const newJoinChat = {
-    //   "name": "Chisomo Volker",
-    //   "avatar": "https://cdn.spls.ae/cdn/avatar/2.jpg",
-    //   "record": 0,
-    //   "rank": 6,
-    //   "gamesPlayed": 44,
-    //   "worstRecord": 0,
-    //   "highestRank": 133
-    // };
-    // setStatChatJoin(newJoinChat);
-    // }, 5000);
+  // Add Keypress event for car controls
+  useEffect(() => {
+
+    // Add keypress handler
+    window.addEventListener('keypress', (e) => setCarPositionEvent(e, width));
+
+    // Remove keypress handler on destroy
+    return () => window.removeEventListener('keypress', (e) => setCarPositionEvent(e, width));
+  }, [width]);
+
+  // Get explosion textures
+  useEffect(() => {
 
   }, []);
 
-  const socket = io("https://wrongway-racer-api.spls.ae/");
 
   useEffect(
     () => {
+      const socket = io("https://wrongway-racer-api.spls.ae/");
       // const socket = io();
       socket.connect();
 
       socket.on('newEnemy', data => {
         if (data) {
           // Set Enemy Props from Websocket
-          setEnemyProps(getEnemyData(data));
+          setEnemyProps(enemyPosition(data, width, height));
         }
       });
 
       return () => {
         socket.disconnect();
       }
-    }, []);
+    }, [width, height]);
 
   useEffect(
     () => {
       // const socket = io();
+
+      const socket = io("https://wrongway-racer-api.spls.ae/");
       socket.connect();
-
-
 
       socket.on('players', data => {
         if (data) {
@@ -272,6 +254,7 @@ const App = () => {
 
   useEffect(
     () => {
+      const socket = io("https://wrongway-racer-api.spls.ae/");
       // const socket = io();
       socket.connect();
 
@@ -291,6 +274,8 @@ const App = () => {
   useEffect(
     () => {
       // const socket = io();
+
+      const socket = io("https://wrongway-racer-api.spls.ae/");
       socket.connect();
 
       socket.on('newChatJoin', data => {
@@ -307,28 +292,26 @@ const App = () => {
 
   return (
     <>
-      <div className='container'>
-        <Stage className='stage'{...stageProperties}>
-          <Background className='background' x={width} y={height} collision={collision} />
+
+      <div className='stage-container '>
+        <Stage className='stage' width={width} height={height}>
+          <Background className='background' width={width} height={height} collision={collision} />
 
           {collision === true ?
-            <Sprite
-              image={explosion_spritesheet}
-              x={playerPosition.x}
-              y={playerPosition.y}
-              width={200}
-              height={200}
+            <Explosion
+              width={width}
+              height={height}
+              carProps={carProps}
+              textures={textures}
             />
-            // <AnimatedSprite
-            //   animationSpeed={0.5}
-            //   isPlaying={true}
-            //   textures={explosion_spritesheet}
-            //   anchor={0.5}
-            // />
+            // <PixiGame />
             :
             <>
               <PlayerCar carProps={carProps} />
-              <EnemyCar carProps={enemyProps} playerPosition={playerPosition} handleCollision={handleCollision} />
+              <EnemyCar enemyProps={enemyProps}
+                carProps={carProps}
+                handleCollision={handleCollision}
+                width={width} height={height} />
             </>
           }
 
@@ -337,7 +320,9 @@ const App = () => {
       <div className='container'>
 
         <Stats statPlayers={statPlayers} statChat={statChat} statChatJoin={statChatJoin} />
+
       </div>
+
     </>
   );
 }

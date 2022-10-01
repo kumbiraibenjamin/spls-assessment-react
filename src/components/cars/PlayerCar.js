@@ -2,30 +2,38 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { Sprite, useTick, } from '@inlet/react-pixi'
 
-let offset = false;
+let offset = 0;
 
 const PlayerCar = ({ carProps }) => {
-    let { x, y, carWidth, carHeight, image, } = carProps;
+    let { x, y, scale, image } = carProps;
 
     let [yPosition, setYPosition] = useState(y);
+    let [xPosition, setXPosition] = useState(x / 2);
+    let [scaleSize, setScaleSize] = useState(scale);
+    let [imageDir, setImageDir] = useState(image);
 
     useTick((delta) => {
-        const d = offset ? -1.5 : 1.5;
-        setYPosition(() => yPosition += d);
-        offset = !offset;
+        const d = offset += delta;
+        setYPosition(() => yPosition += Math.cos(d));
+
     });
 
     useEffect(() => {
+        setYPosition(y - (y * 0.3));
+        setXPosition(x);
+        setImageDir(image);
+        setScaleSize(scale);
 
     }, [carProps]);
     return (
         <Sprite
-            image={image}
-            x={x}
+            image={imageDir}
+            x={xPosition}
             y={yPosition}
-            width={carWidth}
-            height={carHeight}
+            anchor={0.5}
+            scale={scaleSize}
         />
+
     )
 }
 

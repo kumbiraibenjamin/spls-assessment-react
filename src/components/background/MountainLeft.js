@@ -6,17 +6,17 @@ import mountain_left from '../../assets/mountain_left.png';
 
 const MountainLeft = ({ mountainLProps }) => {
 
-    let { x, y, scale } = mountainLProps;
+    let { x, y, scale, anchor } = mountainLProps;
 
     let [xPosition, setXPosition] = useState(x);
     let [yPosition, setYPosition] = useState(y);
     let [scaleSize, setScaleSize] = useState(scale);
 
-    useTick(() => {
+    useTick((delta) => {
         if (scaleSize > 0) {
-            setXPosition(() => xPosition -= 15);
-            setYPosition(() => yPosition += 1);
-            setScaleSize(() => scaleSize += 0.003);
+            // setXPosition(() => xPosition -= 3);
+            // setYPosition(() => yPosition += 0.725);
+            // setScaleSize(() => scaleSize += 0.001);
         }
     });
 
@@ -33,6 +33,7 @@ const MountainLeft = ({ mountainLProps }) => {
                 x={xPosition}
                 y={yPosition}
                 scale={scaleSize}
+                anchor={anchor}
             />
         </>
     )
