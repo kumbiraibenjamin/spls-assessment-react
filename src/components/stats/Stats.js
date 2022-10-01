@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import styles from './Stats.module.css';
 
@@ -15,13 +15,16 @@ const setChatLimit = (chats, statChat) => {
     return chats;
 }
 
+
 const Stats = ({ statChatJoin, statChat, statPlayers }) => {
 
     const [chats, setChats] = useState([]);
 
     useEffect(() => {
-        setChats(setChatLimit(chats, statChat))
+        setChats(setChatLimit(chats, statChat));
     }, [chats, statChat]);
+
+    const getKey = useCallback((str, idx) => encodeURI(`${str},${idx}`), []);
 
     return (
         <div className={styles.statsContainer}>
@@ -46,7 +49,7 @@ const Stats = ({ statChatJoin, statChat, statPlayers }) => {
                         <div className={`card-body ${styles.rankBody}`}>
                             <ul className="list-group list-group-flush">
                                 {
-                                    statPlayers.map((player, playerId) => <PlayerRankItem key={playerId + player.name} player={player} />)
+                                    statPlayers.map((player, idx) => <PlayerRankItem key={getKey(player.name, idx)} player={player} />)
                                 }
 
 
@@ -62,7 +65,7 @@ const Stats = ({ statChatJoin, statChat, statPlayers }) => {
                                 statChatJoin.name ? <div className={styles.chatHeading}><p className={styles.chatJoin}>{statChatJoin.name} has joined the game</p></div> : <></>
                             }
                             {
-                                chats.map((chat, idx) => <div key={idx} className={styles.chat}><p>{chat}</p></div>)
+                                chats.map((chat, chatIdx) => <div key={getKey(chat, chatIdx)} className={styles.chat}><p>{chat}</p></div>)
                             }
                             <div className={styles.gameStartText}><p>The game starts in 6...</p></div>
 
@@ -89,9 +92,9 @@ const Stats = ({ statChatJoin, statChat, statPlayers }) => {
 
                             <button className={`btn btn-secondary w-100 btn-block mb-2 ${styles.settingsButton}`} type="button"><span></span>Settings</button>
                             {
-                                statPlayers.map((player, playerId) => {
+                                statPlayers.map((player, profileIdx) => {
                                     return <>
-                                        <PlayerProfileItem key={playerId} player={player} />
+                                        <PlayerProfileItem key={getKey(player.name, profileIdx)} player={player} />
                                     </>
                                 })
                             }
